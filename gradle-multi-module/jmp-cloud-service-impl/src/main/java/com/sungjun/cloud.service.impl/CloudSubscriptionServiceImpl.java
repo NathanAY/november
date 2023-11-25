@@ -10,18 +10,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@NoArgsConstructor
 public class CloudSubscriptionServiceImpl implements SubscriptionApi {
 
   private SubscriptionRepository subscriptionRepository;
 
   @Override
   public void subscribe(BankCard bankCard) {
-    Subscription subscription = new Subscription();
+    var subscription = new Subscription();
     subscription.setBankcard(bankCard.getNumber());
     subscription.setStartDate(LocalDate.now(Clock.systemUTC()));
     subscriptionRepository.save(subscription);

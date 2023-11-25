@@ -10,36 +10,39 @@ import com.sungjun.dto.repository.CreditBankCardRepository;
 import com.sungjun.dto.repository.DeditBankCardRepository;
 import java.util.Random;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@NoArgsConstructor
 public class CloudBankServiceImpl implements BankApi {
 
-  private final DeditBankCardRepository deditBankCardRepository;
-  private final CreditBankCardRepository creditBankCardRepository;
+  private DeditBankCardRepository deditBankCardRepository;
+  private CreditBankCardRepository creditBankCardRepository;
 
   @Override
   public BankCard createBankCard(UserEntity user, BankCardType bankCardType) {
-    if (BankCardType.DEBIT.equals(bankCardType)) {
-      BankCard creditBankCard = getBankCard(user, bankCardType);
-      DebitBankCard card = deditBankCardRepository.save((DebitBankCard) creditBankCard);
-      return card;
-    } else if (BankCardType.CREDIT.equals(bankCardType)) {
-      BankCard creditBankCard = getBankCard(user, bankCardType);
-      CreditBankCard card = creditBankCardRepository.save((CreditBankCard) creditBankCard);
-      return card;
+    switch (bankCardType) {
+      case DEBIT -> {
+        var creditBankCard = getBankCard(user, bankCardType);
+        var savedCard = deditBankCardRepository.save((DebitBankCard) creditBankCard);
+        return savedCard;
+      }
+      case CREDIT -> {
+        var creditBankCard = getBankCard(user, bankCardType);
+        var savedCard = creditBankCardRepository.save((CreditBankCard) creditBankCard);
+        return savedCard;
+      }
     }
     return null;
   }
 
   private BankCard getBankCard(UserEntity user, BankCardType bankCardType) {
-    BankCard creditBankCard;
-    if (BankCardType.CREDIT.equals(bankCardType)) {
-      creditBankCard = new CreditBankCard();
-    } else {
-      creditBankCard = new DebitBankCard();
-    }
+    BankCard creditBankCard = switch (bankCardType) {
+      case CREDIT -> new CreditBankCard();
+      case DEBIT -> new DebitBankCard();
+    };
     creditBankCard.setUser(user);
     creditBankCard.setNumber(generateCardNumber());
     return creditBankCard;
@@ -48,20 +51,20 @@ public class CloudBankServiceImpl implements BankApi {
 
   private String generateCardNumber() {
     Random random = new Random();
-    StringBuilder builder = new StringBuilder();
+    var cardNumber = new StringBuilder();
     int groupLength = 4;
 
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < groupLength; j++) {
         int randomDigit = random.nextInt(10);
-        builder.append(randomDigit);
+        cardNumber.append(randomDigit);
       }
 
       if (i < 3) {
-        builder.append(" ");
+        cardNumber.append(" ");
       }
     }
 
-    return builder.toString();
+    return cardNumber.toString();
   }
 }

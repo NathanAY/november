@@ -6,10 +6,12 @@ import com.sungjun.dto.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@NoArgsConstructor
 public class CloudUserServiceImpl implements UserService {
 
   private UserRepository userRepository;
@@ -23,7 +25,6 @@ public class CloudUserServiceImpl implements UserService {
         .build();
 
     return userRepository.save(user);
-    // return null;
   }
 
 
