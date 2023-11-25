@@ -1,0 +1,7 @@
+rootProject.name = 'sample-multi-module'
+include 'sample-admin'
+include 'jmp-bank-api'
+include 'jmp-cloud-bank-impl'
+include 'jmp-service-api'
+include 'jmp-cloud-service-impl'
+include 'jmp-dto'

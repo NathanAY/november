@@ -1,0 +1,39 @@
+buildscript {
+    ext {
+        springBootVersion = '3.1.5'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE"
+    }
+}
+
+allprojects {
+    group 'com.sungjun'
+    version '1.0-SNAPSHOT'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = 21
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation group: 'junit', name: 'junit', version: '4.12'
+    }
+}
+
+project(':sample-admin') {
+    dependencies {
+//        compile project(':sample-common')
+    }
+}

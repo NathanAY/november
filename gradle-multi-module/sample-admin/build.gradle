@@ -1,0 +1,14 @@
+dependencies {
+    implementation ('org.springframework.boot:spring-boot-starter-web')
+    implementation ('org.springframework.boot:spring-boot-starter-data-jpa')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation project(':jmp-dto')
+    implementation project(':jmp-cloud-service-impl')
+    implementation project(':jmp-cloud-bank-impl')
+    implementation project(':jmp-service-api')
+    implementation project(':jmp-bank-api')
+}
