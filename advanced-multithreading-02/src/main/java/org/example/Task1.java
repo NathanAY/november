@@ -3,7 +3,8 @@ package org.example;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class Task1 {
@@ -20,40 +21,50 @@ public class Task1 {
       while (i >= 0) {
         map.put(i, i);
         i++;
-        System.out.println(map);
+        System.out.println("add");
         // try {
-          // Thread.sleep(10);
+        //   Thread.sleep(10);
         // } catch (InterruptedException e) {
         //   throw new RuntimeException(e);
         // }
       }
     }).start();
 
-    Object call = ((Callable) () -> {
+    new Thread(() -> {
       System.out.println("reduce started");
       while (true) {
         Integer reduce = map.values().stream().reduce(0, (i1, i2) -> i1 + i2);
         System.out.println(reduce);
         // Thread.sleep(5);
       }
-    }).call();
+    }).start();
   }
 
   class ThreadSafeMap {
     HashMap<Integer, Integer> hashMap = new HashMap();
 
+    private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
+    private final Lock readLock = rwLock.readLock();
+    private final Lock writeLock = rwLock.writeLock();
+
     public void put(Integer key, Integer value) {
-      synchronized (hashMap) {
+      writeLock.lock();
+      try {
         hashMap.put(key, value);
+      } finally {
+        writeLock.unlock();
       }
     }
 
     public Collection<Integer> values() {
-      synchronized (hashMap) {
+      readLock.lock();
+      try {
         List<Integer> cloneCollection = hashMap.values().stream()
             .map(Integer::valueOf)
             .collect(Collectors.toList());
         return cloneCollection;
+      } finally {
+        readLock.unlock();
       }
     }
   }

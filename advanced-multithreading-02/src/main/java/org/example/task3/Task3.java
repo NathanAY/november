@@ -11,7 +11,7 @@ public class Task3 {
     int consumersSize = 2;
 
     for (int i = 0; i < producersSize; i++) {
-      Producer producer = new Producer(queue);
+      Producer producer = new Producer(queue, "topic" + i);
       producer.start();
     }
 

@@ -16,8 +16,6 @@ public class Consumer extends Thread {
         if (message != null && message.getTopic().equals(topic)) {
           System.out.println(Thread.currentThread().getName() + " consumer poll from topic "
               + "[" + topic + "] "+ message.getPayload());
-        } else if (message == null) {
-          sleep(1000);
         }
       } catch (InterruptedException e) {
         e.printStackTrace();

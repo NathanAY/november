@@ -25,11 +25,11 @@ public class CustomBlockingQueue {
   }
 
   public synchronized void add(Message item) throws InterruptedException {
-    while (queue2.get(item.getTopic()).size() == maxSize) {
+    while (queue2.get(item.getTopic()).size() >= maxSize) {
       System.out.println(Thread.currentThread().getName() + " WAIT FROM ADD");
       wait();
     }
-    if (queue2.isEmpty()) {
+    if (queue2.get(item.getTopic()).isEmpty()) {
       System.out.println(Thread.currentThread().getName() + " NOTIFY ALL FROM ADD");
       notifyAll();
     }
@@ -40,9 +40,9 @@ public class CustomBlockingQueue {
   public synchronized Message poll(String topic) throws InterruptedException {
     while (queue2.get(topic).isEmpty()) {
       System.out.println(Thread.currentThread().getName() + " WAIT FROM POLL");
-      return null;
+      wait();
     }
-    if (queue2.size() == maxSize) {
+    if (queue2.get(topic).size() == maxSize) {
       System.out.println(Thread.currentThread().getName() + " NOTIFY ALL FROM POLL");
       notifyAll();
     }

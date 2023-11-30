@@ -1,24 +1,55 @@
 package org.example.task4;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+import lombok.SneakyThrows;
 
 public class BlockingObjectPool {
 
   private final LinkedBlockingQueue<Object> pool;
+  private final List<String> list;
+  private final int maxSize;
+
+  ReentrantLock lock = new ReentrantLock();
+  Condition listEmptyCondition = lock.newCondition();
+  Condition listFullCondition = lock.newCondition();
+
 
   public BlockingObjectPool(int size) {
-    pool = new LinkedBlockingQueue<>(size);
-    for (int i = 0; i < size; i++) {
-      pool.offer(new Object());
+    this.pool = new LinkedBlockingQueue<>(size);
+    this.list = new ArrayList<>(size);
+    this.maxSize = size;
+  }
+
+  @SneakyThrows
+  public void add(String item) {
+    try {
+      lock.lock();
+      while (list.size() == maxSize) {
+        listFullCondition.await();
+      }
+      list.add(item);
+      listEmptyCondition.signalAll();
+    } finally {
+      lock.unlock();
     }
   }
 
-  public Object get() throws InterruptedException {
-    return pool.take();
-  }
+  @SneakyThrows
+  public String get() {
+    try {
+      lock.lock();
+      while (list.size() == 0) {
+        listEmptyCondition.await();
+      }
+      return list.get(list.size() - 1);
+    } finally {
+      listFullCondition.signalAll();
+      lock.unlock();
 
-  public void take(Object object) throws InterruptedException {
-    pool.put(object);
-    System.out.println("new object taken. Current size: " + pool.size());
+    }
   }
 }

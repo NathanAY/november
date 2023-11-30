@@ -13,7 +13,6 @@ import org.example.task5.model.Currency;
 public class AccountService {
 
   AccountDao accountDao = new AccountDao();
-  private final Object transferLock = new Object();
 
   LockManager lockManager = new LockManager();
 
@@ -74,7 +73,7 @@ public class AccountService {
 
             accountDao.save(fromAccount);
             accountDao.save(toAccount);
-            Thread.sleep(10);
+            // Thread.sleep(10);
           } finally {
             lockManager.acquireLock(secondId).unlock();
           }
@@ -85,15 +84,4 @@ public class AccountService {
     }
   }
 
-  public void withdraw(Account account, BigDecimal amount, Currency currency) {
-    BigDecimal currencyBalance = account.getCurrencyBalance().get(currency.getCode());
-    BigDecimal subtract = currencyBalance.subtract(amount);
-    account.getCurrencyBalance().put(currency.getCode(), subtract);
-  }
-
-  public void deposit(Account account, BigDecimal amount, Currency currency) {
-    BigDecimal currencyBalance = account.getCurrencyBalance().get(currency.getCode());
-    BigDecimal added = currencyBalance.add(amount);
-    account.getCurrencyBalance().put(currency.getCode(), added);
-  }
 }
